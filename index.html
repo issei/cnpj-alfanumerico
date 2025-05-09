@@ -1,58 +1,62 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Validador de CNPJ Alfanumérico</title>
+  <title>Validação CNPJ Alfanumérico</title>
   <style>
-    input {
-      font-size: 1.2rem;
-      padding: 8px;
-      width: 280px;
-    }
-    .valido { border: 2px solid green; }
-    .invalido { border: 2px solid red; }
+    input.valid { border-color: green; }
+    input.invalid { border-color: red; }
   </style>
 </head>
 <body>
 
-  <h2>Digite seu CNPJ:</h2>
-  <input type="text" id="cnpj" maxlength="18" placeholder="00.000.000/0000-00" />
+  <label for="cnpj">Digite o CNPJ Alfanumérico:</label><br>
+  <input type="text" id="cnpj" maxlength="18" autocomplete="off" />
+  <p id="mensagem"></p>
 
   <script type="module">
-    import CNPJ from './cnpj.js';
+    // Simula a importação da classe CNPJ (insira a sua real aqui ou como módulo)
+    import CNPJ from './cnpj.js'; // certifique-se que este caminho aponta para o seu arquivo
 
     const input = document.getElementById('cnpj');
+    const mensagem = document.getElementById('mensagem');
 
-    // Remover caracteres de máscara
-    function limparMascara(valor) {
-      return valor.replace(/[^\w\d]/gi, '').toUpperCase(); // mantém letras e dígitos
-    }
+    // Formata o CNPJ enquanto digita (com ou sem máscara parcial)
+    input.addEventListener('input', () => {
+      const valor = input.value.toUpperCase().replace(/[^\dA-Z]/g, '');
+      let formatado = '';
 
-    // Aplicar a máscara do CNPJ (XX.XXX.XXX/XXXX-XX)
-    function aplicarMascara(valor) {
-      const v = limparMascara(valor).substring(0, 14); // limita a 14 caracteres
-      let result = '';
-      for (let i = 0; i < v.length; i++) {
-        result += v[i];
-        if (i === 1 || i === 4) result += '.';
-        if (i === 7) result += '/';
-        if (i === 11) result += '-';
+      for (let i = 0; i < valor.length && i < 14; i++) {
+        formatado += valor[i];
+        if (i === 1 || i === 4) formatado += '.';
+        if (i === 7) formatado += '/';
+        if (i === 11) formatado += '-';
       }
-      return result;
-    }
 
-    input.addEventListener('input', (e) => {
-      const cursor = input.selectionStart;
-      const raw = limparMascara(e.target.value);
-      const comMascara = aplicarMascara(raw);
-      input.value = comMascara;
+      input.value = formatado;
+      input.classList.remove('valid', 'invalid');
+      mensagem.textContent = '';
     });
 
+    // Valida o CNPJ ao sair do campo
     input.addEventListener('blur', () => {
-      const valor = input.value;
-      const valido = CNPJ.isValid(valor);
-      input.classList.remove('valido', 'invalido');
-      input.classList.add(valido ? 'valido' : 'invalido');
+      const cnpjDigitado = input.value;
+
+      if (!cnpjDigitado.trim()) return;
+
+      const valido = CNPJ.isValid(cnpjDigitado);
+
+      if (valido) {
+        input.classList.add('valid');
+        input.classList.remove('invalid');
+        mensagem.textContent = '✅ CNPJ válido';
+        mensagem.style.color = 'green';
+      } else {
+        input.classList.add('invalid');
+        input.classList.remove('valid');
+        mensagem.textContent = '❌ CNPJ inválido';
+        mensagem.style.color = 'red';
+      }
     });
   </script>
 

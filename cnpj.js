@@ -93,4 +93,4 @@ class CNPJ {
   }
 }
 
-module.exports = CNPJ;
+export default CNPJ;
