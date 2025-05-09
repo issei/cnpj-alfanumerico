@@ -171,11 +171,12 @@ describe('Função CNPJ.removeMascaraCNPJ (remoção de máscara de formatação
  *    - Verifica que em todos os casos um Error é lançado com a mensagem apropriada.
  */
 describe('Tratamento de entradas malformadas em CNPJ.calculaDV (lançamento de erros)', () => {
-  test('Deve lançar erro ao calcular DV de uma string contendo caracteres inválidos', () => {
-    const baseInvalida = '12ABC34501D?';  // Contém '?' não permitido
-    expect(() => CNPJ.calculaDV(baseInvalida)).toThrow("Não é possível calcular o DV pois o CNPJ fornecido é inválido");
-  });
+    test('Deve lançar erro ao calcular DV de uma string contendo caracteres inválidos', () => {
+        const baseInvalida = '12ABC34501D?';  // Contém '?' não permitido
+        expect(() => CNPJ.calculaDV(baseInvalida)).toThrow("Não é possível calcular o DV: contém caracteres inválidos");
+      });
 
+      
   test('Deve lançar erro ao calcular DV de uma base com menos de 12 caracteres', () => {
     const baseCurta = '12345678901';  // 11 caracteres apenas
     expect(() => CNPJ.calculaDV(baseCurta)).toThrow("Não é possível calcular o DV pois o CNPJ fornecido é inválido");
