@@ -1,4 +1,4 @@
-const CNPJ = require('./cnpj');
+import CNPJ from './cnpj.js';
 
 // Lista de CNPJs para teste
 const cnpjs = [

@@ -1,6 +1,6 @@
 // Importa as funções globais de teste do Jest e a classe CNPJ a ser testada
-const { describe, test, expect } = require('@jest/globals');
-const CNPJ = require('./cnpj');
+import { describe, test, expect } from '@jest/globals';
+import CNPJ from './cnpj.js';
 
 /**
  * 1. Casos Válidos de CNPJ Alfanumérico
@@ -25,6 +25,16 @@ describe('CNPJs Válidos (alfanuméricos)', () => {
     const cnpjValido = '12ABC34501DE35';  // Exemplo do PDF/documentação
     expect(CNPJ.isValid(cnpjValido)).toBe(true);
   });
+
+  test('CNPJ válido com letras minúsculas deve retornar true', () => {
+    const cnpjMinusculas = 'a1b2c3d4e5f668'; // Versão em minúsculas de um CNPJ válido
+    expect(CNPJ.isValid(cnpjMinusculas)).toBe(true);
+  });
+
+  test('CNPJ válido com letras misturadas (maiúsculas/minúsculas) deve retornar true', () => {
+    const cnpjMisto = '12.AbC.345/01dE-35'; // Versão com máscara e letras misturadas
+    expect(CNPJ.isValid(cnpjMisto)).toBe(true);
+  });
 });
 
 /**
@@ -46,7 +56,6 @@ describe('CNPJs Inválidos', () => {
     '12ABC34501DE',      // Apenas base de 12 caracteres sem DV
     '12ABC!4501DE35',    // Contém caracter especial não permitido '!'
     'A1B2C3D4E5F6G7',    // 15 caracteres (mais de 14 permitidos)
-    'a1B2C3D4E5F689',    // Contém letra minúscula 'a' (formato inválido)
   ];
 
   test.each(cnpjsInvalidos)('CNPJ inválido deve retornar false: %s', (cnpj) => {
@@ -76,11 +85,6 @@ describe('CNPJs Inválidos', () => {
   test('CNPJ composto somente de zeros deve retornar false', () => {
     const cnpjZerado = '00000000000000';  // 14 zeros
     expect(CNPJ.isValid(cnpjZerado)).toBe(false);
-  });
-
-  test('CNPJ com letras minúsculas deve retornar false', () => {
-    const cnpjMinusculas = 'a1b2c3d4e5f689';  // Mesmo conteúdo de um válido, porém com letras minúsculas
-    expect(CNPJ.isValid(cnpjMinusculas)).toBe(false);
   });
 });
 
@@ -137,6 +141,12 @@ describe('Função CNPJ.calculaDV (cálculo dos dígitos verificadores)', () => 
     const dvCalculado = CNPJ.calculaDV(baseNumerica);
     const dvEsperado = '30';  // DV esperado para a base numérica acima
     expect(dvCalculado).toBe(dvEsperado);
+  });
+
+  test('calculaDV deve ser case-insensitive e calcular DV para base com letras minúsculas', () => {
+    const baseMinusculas = 'a1b2c3d4e5f6'; // Base em minúsculas
+    const dvEsperado = '68'; // Mesmo DV da base em maiúsculas
+    expect(CNPJ.calculaDV(baseMinusculas)).toBe(dvEsperado);
   });
 });
 
